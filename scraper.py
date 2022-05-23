@@ -44,7 +44,7 @@ for i in deps.find_all('a', {'class': 'department-item-link'}):
 
 print('working, please wait...')
 
-for link in links[:1]:
+for link in links:
     dep_source = requests.get(f'{ROOT_URL}{link}')
     dep = BeautifulSoup(dep_source.text, features='html.parser')
     for i in dep.find_all('a', {'class': 'administration-card-image'}):
