@@ -64,9 +64,9 @@ for link in links:
                     with open(pic, 'wb') as file:
                         file.write(image)
 
-img_extensions = ['jpg','jpeg', 'bmp', 'png', 'gif']
+img_extensions = ['jpg', 'jpeg', 'bmp', 'png', 'gif']
 img_count = [fn for fn in os.listdir(path=LOCAL_JPG_DIR)
-              if any(fn.endswith(ext) for ext in img_extensions)]
+             if any(fn.endswith(ext) for ext in img_extensions)]
 
 print(
     f'job done, {len(img_count)} files downloaded',
