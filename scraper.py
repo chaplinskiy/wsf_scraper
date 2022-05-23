@@ -57,18 +57,18 @@ for link in links:
             for idx, row in df.iterrows():
                 if findExactSurname(surname, row['person_name']):
                     if row['person_id'] != 'NULL':
-                        pic = f'{LOCAL_JPG_DIR}{row["person_id"]}.jpg'
+                        img = f'{LOCAL_JPG_DIR}{row["person_id"]}.jpg'
                     else:
-                        pic = f'{LOCAL_JPG_DIR}section_{row["section_id"]}.jpg'
+                        img = f'{LOCAL_JPG_DIR}section_{row["section_id"]}.jpg'
                     image = requests.get(f'{ROOT_URL}{person_img}').content
-                    with open(pic, 'wb') as file:
+                    with open(img, 'wb') as file:
                         file.write(image)
 
 img_extensions = ['jpg', 'jpeg', 'bmp', 'png', 'gif']
-img_count = [fn for fn in os.listdir(path=LOCAL_JPG_DIR)
+img_total = [fn for fn in os.listdir(path=LOCAL_JPG_DIR)
              if any(fn.endswith(ext) for ext in img_extensions)]
 
 print(
-    f'job done, {len(img_count)} files downloaded',
+    f'job done, {len(img_total)} files downloaded',
     f'to {os.path.abspath(LOCAL_JPG_DIR)}'
 )
