@@ -44,7 +44,7 @@ for i in deps.find_all('a', {'class': 'department-item-link'}):
 
 print('working, please wait...')
 
-for link in links:
+for link in links[:1]:
     dep_source = requests.get(f'{ROOT_URL}{link}')
     dep = BeautifulSoup(dep_source.text, features='html.parser')
     for i in dep.find_all('a', {'class': 'administration-card-image'}):
@@ -64,7 +64,11 @@ for link in links:
                     with open(pic, 'wb') as file:
                         file.write(image)
 
+img_extensions = ['jpg','jpeg', 'bmp', 'png', 'gif']
+img_count = [fn for fn in os.listdir(path=LOCAL_JPG_DIR)
+              if any(fn.endswith(ext) for ext in img_extensions)]
+
 print(
-    f'job done, {len(os.listdir(path=LOCAL_JPG_DIR))} files downloaded',
+    f'job done, {len(img_count)} files downloaded',
     f'to {os.path.abspath(LOCAL_JPG_DIR)}'
 )
