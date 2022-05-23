@@ -1,6 +1,6 @@
 env/
 venv/
-test.py
+test.*
 *.docx
 *.jpg
 .DS_Store
