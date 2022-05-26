@@ -10,27 +10,36 @@ from csv import reader
 ROOT_URL = 'https://minobrnauki.gov.ru'
 LOCAL_JPG_DIR = 'data/jpg/'
 
-person_name = []
-person_id = []
-section_id = []
+person_names = []
+names = []
+person_ids = []
+section_ids = []
 links = []
 
 
-def findExactSurname(word, string):
+def findExactSurname(word: str, string: str):
     return re.search(r'\b({0})\b'.format(word), string, flags=re.IGNORECASE)
 
 
+def compareInitials(a: str, b: str):
+    return a[:1].lower() == b[:1].lower()
+
+
+print('working, please wait...')
+
 with open('data/minobr_scrape_list.csv') as list:
     for row in reader(list):
-        person_name.append(row[0])
-        person_id.append(row[4])
-        section_id.append(row[5])
+        person_names.append(row[0])
+        names.append(row[1])
+        person_ids.append(row[4])
+        section_ids.append(row[5])
 
 df = pd.DataFrame(
     {
-        'person_name': person_name[1:],
-        'person_id': person_id[1:],
-        'section_id': section_id[1:]
+        'person_name': person_names[1:],
+        'name': names[1:],
+        'person_id': person_ids[1:],
+        'section_id': section_ids[1:]
     }).drop_duplicates(subset=['person_name'])
 
 source = requests.get(
@@ -42,8 +51,6 @@ deps = BeautifulSoup(source.text, features='html.parser')
 for i in deps.find_all('a', {'class': 'department-item-link'}):
     links.append(i.attrs['href'])
 
-print('working, please wait...')
-
 for link in links:
     dep_source = requests.get(f'{ROOT_URL}{link}')
     dep = BeautifulSoup(dep_source.text, features='html.parser')
@@ -51,11 +58,18 @@ for link in links:
         person_img = i.contents[1].attrs['src']
         person_name_web = i.find_next_sibling(
             'div', {'class': 'administration-card-body'}
-        ).contents[1].text
+        ).contents[1].text.split()
         if len(person_name_web) > 1:
-            surname = person_name_web.split()[0]
+
+            surname = person_name_web[0]
+            name = person_name_web[1]
+
             for idx, row in df.iterrows():
-                if findExactSurname(surname, row['person_name']):
+                if findExactSurname(
+                    surname, row['person_name']
+                ) and compareInitials(
+                    name, row['name']
+                ):
                     if row['person_id'] != 'NULL':
                         img = f'{LOCAL_JPG_DIR}{row["person_id"]}.jpg'
                     else:
@@ -63,6 +77,7 @@ for link in links:
                     image = requests.get(f'{ROOT_URL}{person_img}').content
                     with open(img, 'wb') as file:
                         file.write(image)
+                    df.drop(idx, inplace=True)
 
 img_extensions = ['jpg', 'jpeg', 'bmp', 'png', 'gif']
 img_total = [fn for fn in os.listdir(path=LOCAL_JPG_DIR)

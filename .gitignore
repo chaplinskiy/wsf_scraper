@@ -1,6 +1,7 @@
 env/
 venv/
 test.*
+*_todo.*
 *.docx
 *.jpg
 .DS_Store
